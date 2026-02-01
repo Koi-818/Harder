@@ -1,0 +1,26 @@
+{
+  "name": "har-record",
+  "version": "1.0.0",
+  "description": "使用 Playwright 录制浏览器 HAR 文件",
+  "main": "src/cli.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:debug": "playwright test --debug",
+    "start": "node src/cli.js",
+    "dev": "node src/cli.js",
+    "record": "node src/cli.js"
+  },
+  "keywords": [
+    "playwright",
+    "har",
+    "performance",
+    "recording"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@types/node": "^25.1.0"
+  }
+}
