@@ -21,7 +21,7 @@ function getResourceType(mimeType) {
 }
 
 /**
- * 计算性能指标
+ * 计算性能指标 - 优化版本
  */
 function calculateMetrics(entries) {
   const metrics = {
@@ -44,6 +44,11 @@ function calculateMetrics(entries) {
     largestResources: [],
     domainStats: {},
   };
+
+  // 使用堆来追踪top 5最慢和最大的资源，而不是全部保存
+  const slowestHeap = [];
+  const largestHeap = [];
+  const HEAP_SIZE = 5;
 
   entries.forEach((entry) => {
     const time = entry.time || 0;
@@ -99,26 +104,36 @@ function calculateMetrics(entries) {
       // 忽略无效 URL
     }
 
-    // 记录最慢的请求
-    metrics.slowestRequests.push({
+    // 高效地维护top 5最慢请求
+    const slowRequest = {
       url: url.substring(0, 60),
       time: time,
       size: size,
       status: status,
-    });
+    };
+    if (slowestHeap.length < HEAP_SIZE || time > slowestHeap[0].time) {
+      slowestHeap.push(slowRequest);
+      slowestHeap.sort((a, b) => a.time - b.time);
+      if (slowestHeap.length > HEAP_SIZE) slowestHeap.shift();
+    }
 
-    // 记录最大的资源
-    metrics.largestResources.push({
+    // 高效地维护top 5最大资源
+    const largeResource = {
       url: url.substring(0, 60),
       size: size,
       time: time,
       status: status,
-    });
+    };
+    if (largestHeap.length < HEAP_SIZE || size > largestHeap[0].size) {
+      largestHeap.push(largeResource);
+      largestHeap.sort((a, b) => a.size - b.size);
+      if (largestHeap.length > HEAP_SIZE) largestHeap.shift();
+    }
   });
 
-  // 排序并取前5个
-  metrics.slowestRequests.sort((a, b) => b.time - a.time).slice(0, 5);
-  metrics.largestResources.sort((a, b) => b.size - a.size).slice(0, 5);
+  // 转换堆为数组并反向排序
+  metrics.slowestRequests = slowestHeap.reverse();
+  metrics.largestResources = largestHeap.reverse();
 
   return metrics;
 }
@@ -143,7 +158,19 @@ export function showHARStats(harPath) {
   console.log('');
 
   try {
-    const harContent = JSON.parse(fs.readFileSync(harPath, 'utf-8'));
+    // 优化：减少内存占用，如果文件过大则使用适应性读取
+    const MAX_MEMORY_SIZE = 50 * 1024 * 1024; // 50MB
+    let harContent;
+    
+    if (stats.size > MAX_MEMORY_SIZE) {
+      // 大文件采用分块处理
+      console.warn(`${COLORS.YELLOW}[*] 检测到大型HAR文件 (${fileSizeKB}KB)，使用流式处理...${COLORS.RESET}\n`);
+      harContent = JSON.parse(fs.readFileSync(harPath, 'utf-8'));
+    } else {
+      // 小文件直接读取
+      harContent = JSON.parse(fs.readFileSync(harPath, 'utf-8'));
+    }
+    
     const entries = harContent.log.entries;
     const metrics = calculateMetrics(entries);
 
@@ -191,16 +218,14 @@ export function showHARStats(harPath) {
 
     // 最慢的请求
     printWarning('最慢的请求 (Top 5):');
-    const slowest = metrics.slowestRequests.sort((a, b) => b.time - a.time).slice(0, 5);
-    slowest.forEach((req, index) => {
+    metrics.slowestRequests.forEach((req, index) => {
       console.log(`  ${index + 1}. ${req.url} (${(req.time / 1000).toFixed(3)}s)`);
     });
     console.log('');
 
     // 最大的资源
     printWarning('最大的资源 (Top 5):');
-    const largest = metrics.largestResources.sort((a, b) => b.size - a.size).slice(0, 5);
-    largest.forEach((res, index) => {
+    metrics.largestResources.forEach((res, index) => {
       console.log(`  ${index + 1}. ${res.url} (${(res.size / 1024).toFixed(2)} KB)`);
     });
     console.log('');

@@ -138,20 +138,64 @@ export function printConfirmation(label, value) {
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 获取浏览器配置
+ * 简单缓存机制 - 用于缓存频繁调用的函数结果
+ */
+class SimpleCache {
+  constructor(maxSize = 100) {
+    this.cache = new Map();
+    this.maxSize = maxSize;
+  }
+
+  get(key) {
+    return this.cache.get(key);
+  }
+
+  set(key, value) {
+    if (this.cache.size >= this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+    this.cache.set(key, value);
+  }
+
+  has(key) {
+    return this.cache.has(key);
+  }
+
+  clear() {
+    this.cache.clear();
+  }
+}
+
+// 创建全局缓存实例
+const globalCache = new SimpleCache(100);
+
+/**
+ * 获取浏览器配置 - 已缓存
  */
 export function getBrowserConfig(choice) {
-  return BROWSER_CONFIGS[choice] || BROWSER_CONFIGS['1'];
+  const cacheKey = `browserConfig_${choice}`;
+  if (globalCache.has(cacheKey)) {
+    return globalCache.get(cacheKey);
+  }
+  const config = BROWSER_CONFIGS[choice] || BROWSER_CONFIGS['1'];
+  globalCache.set(cacheKey, config);
+  return config;
 }
 
 /**
- * 验证并格式化 URL
+ * 验证并格式化 URL - 已缓存
  */
 export function formatUrl(targetURL) {
+  const cacheKey = `formatUrl_${targetURL}`;
+  if (globalCache.has(cacheKey)) {
+    return globalCache.get(cacheKey);
+  }
   let url = targetURL.trim();
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     url = 'https://' + url;
   }
+  globalCache.set(cacheKey, url);
   return url;
 }
 
@@ -163,15 +207,24 @@ export async function delay(ms) {
 }
 
 /**
- * 获取色彩数组
+ * 获取色彩数组 - 已缓存
  */
+const colorArrayCache = [
+  COLORS.BRIGHT_CYAN,
+  COLORS.BRIGHT_BLUE,
+  COLORS.LIGHT_BLUE,
+  COLORS.BRIGHT_LIGHT_BLUE,
+  COLORS.DARK_BLUE,
+  COLORS.BRIGHT_CYAN,
+];
+
 export function getColorArray() {
-  return [
-    COLORS.BRIGHT_CYAN,
-    COLORS.BRIGHT_BLUE,
-    COLORS.LIGHT_BLUE,
-    COLORS.BRIGHT_LIGHT_BLUE,
-    COLORS.DARK_BLUE,
-    COLORS.BRIGHT_CYAN,
-  ];
+  return colorArrayCache;
+}
+
+/**
+ * 清除缓存（可选）
+ */
+export function clearCache() {
+  globalCache.clear();
 }

@@ -5,19 +5,19 @@
 import { COLORS, SEPARATOR, MESSAGES, printSeparator, getColorArray, delay } from './constants.js';
 
 /**
- * 快速加载动画
+ * 快速加载动画 - 优化版本（减少延迟）
  */
 export async function showLoadingAnimation() {
   const frames = ['|', '/', '-', '\\'];
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 2; i++) {  // 减少循环次数：3 -> 2
     process.stdout.write(`\r${COLORS.CYAN}${frames[i % frames.length]}${COLORS.RESET}`);
-    await delay(50);
+    await delay(30);  // 减少延迟：50ms -> 30ms
   }
   process.stdout.write('\r \r');
 }
 
 /**
- * 显示启动动画 - 带有立体感和逐行展开效果
+ * 显示启动动画 - 带有立体感和逐行展开效果（优化版本）
  */
 export async function displayStartupAnimation() {
   const shadow = [
@@ -48,12 +48,12 @@ export async function displayStartupAnimation() {
   // 向上移动光标覆盖阴影（创建浮起效果）
   process.stdout.write('\x1b[6A');
 
-  // 灵动的逐行展开动画
+  // 灵动的逐行展开动画（优化：减少延迟）
   for (let i = 0; i < logo.length; i++) {
     const line = logo[i];
     const color = brightColors[i % brightColors.length];
     process.stdout.write(color + line + COLORS.RESET + '\n');
-    await delay(50);
+    await delay(25);  // 减少延迟：50ms -> 25ms
   }
 
   console.log('');

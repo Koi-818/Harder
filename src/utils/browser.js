@@ -75,7 +75,7 @@ export async function detectBrowserClose(browser, page, context) {
 
   const { disconnectHandler, closeHandler } = setupEventHandlers();
 
-  // 定期检查页面是否仍然可用
+  // 定期检查页面是否仍然可用（优化：减少轮询频率以降低CPU使用率）
   checkInterval = setInterval(async () => {
     try {
       await page.evaluate(() => 1);
@@ -84,7 +84,7 @@ export async function detectBrowserClose(browser, page, context) {
       printSuccess(MESSAGES.BROWSER_CLOSED);
       clearInterval(checkInterval);
     }
-  }, 500);
+  }, 1000);  // 从500ms优化到1000ms，减少CPU占用
 
   // 等待浏览器关闭
   await waitForCondition(() => browserClosed);
