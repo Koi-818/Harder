@@ -1,6 +1,6 @@
-# Playwright HAR 录制工具
+# HAR 录制工具
 
-使用 Playwright 浏览器自动化框架录制 HTTP Archive (HAR) 文件，用于性能测试和性能分析。
+使用浏览器自动化框架录制 HTTP Archive (HAR) 文件，用于性能测试和性能分析。
 
 ## 功能特性
 
@@ -39,12 +39,19 @@ npm start
 ```
 .
 ├── src/
-│   └── cli.js              # 主程序入口
-├── hars/                   # HAR 文件输出目录
-├── tests/                  # Playwright 测试用例
-├── package.json            # 项目配置
-├── playwright.config.js    # Playwright 配置
-└── README.md              # 本文件
+│   ├── cli.js              # 主入口文件
+│   └── utils/
+│       ├── ui.js              # UI 和动画相关函数
+│       ├── browser.js         # 浏览器控制和操作
+│       ├── har-parser.js      # HAR 文件解析和统计
+│       ├── logger.js          # 日志系统
+│       ├── input.js           # 用户输入
+│       └── constants.js       # 常量和工具函数
+├── hars/                      # HAR 文件输出目录
+├── logs/                      # 日志输出目录
+├── config.json                # 配置文件
+├── package.json               # 项目配置
+└── README.md                  # 项目说明
 ```
 
 ## 命令
@@ -53,8 +60,7 @@ npm start
 |------|------|
 | `npm start` | 启动交互式 HAR 录制 |
 | `npm run record` | 同上 |
-| `npm test` | 运行 Playwright 测试 |
-| `npm run test:debug` | 调试模式运行测试 |
+| `npm run clean:logs` | 清理日志文件 |
 
 ## HAR 文件输出
 
@@ -138,15 +144,17 @@ ISC
 .
 ├── src/
 │   ├── cli.js              # 交互式命令行工具
-│   └── har-recorder.js     # HAR 录制核心模块
+│   └── utils/
+│       ├── har-parser.js   # HAR 文件解析和统计
+│       ├── logger.js       # 日志系统
+│       ├── ui.js           # UI 和动画
+│       ├── browser.js      # 浏览器控制
+│       ├── input.js        # 用户输入
+│       └── constants.js    # 常量和工具
 ├── hars/                   # HAR 文件输出目录
-├── docs/
-│   ├── README.md           # 详细文档
-│   └── QUICK-START.md      # 快速入门指南
-├── tests/
-│   └── example.spec.js     # Playwright 测试
+├── logs/                   # 日志输出目录
+├── config.json             # 配置文件
 ├── package.json
-├── playwright.config.js
 └── README.md
 ```
 
@@ -156,8 +164,7 @@ ISC
 npm start                    # 启动交互式录制工具
 npm run record              # 同上
 npm run dev                 # 开发模式启动
-npm test                    # 运行测试
-npm run test:debug          # 调试模式运行测试
+npm run clean:logs          # 清理日志文件
 ```
 
 ## 输出文件
