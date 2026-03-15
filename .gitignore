@@ -6,3 +6,13 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Logs
+logs/
+*.log
+
+# HAR files
+hars/
+
+# Config (optional)
+config.local.json

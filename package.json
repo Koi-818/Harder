@@ -1,6 +1,6 @@
 {
   "name": "har-record",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "使用 Playwright 录制浏览器 HAR 文件",
   "main": "src/cli.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "test:debug": "playwright test --debug",
     "start": "node src/cli.js",
     "dev": "node src/cli.js",
-    "record": "node src/cli.js"
+    "record": "node src/cli.js",
+    "clean:logs": "node -e \"const fs=require('fs');const path=require('path');const dir=path.join(process.cwd(),'logs');if(fs.existsSync(dir)){fs.readdirSync(dir).forEach(f=>fs.unlinkSync(path.join(dir,f)));console.log('日志已清理');}else{console.log('日志目录不存在');}\""
   },
   "keywords": [
     "playwright",

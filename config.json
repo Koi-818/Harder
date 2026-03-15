@@ -1,0 +1,43 @@
+{
+  "app": {
+    "name": "Harder HAR Recorder",
+    "version": "2.0.0",
+    "description": "使用 Playwright 录制浏览器 HAR 文件"
+  },
+  "browser": {
+    "default": "chrome",
+    "timeout": 3600000,
+    "headless": false,
+    "args": []
+  },
+  "recording": {
+    "outputDir": "hars",
+    "defaultFileName": "recording",
+    "includeResponseBodies": true,
+    "maxFileSize": 52428800
+  },
+  "performance": {
+    "enableStats": true,
+    "topN": 5,
+    "slowRequestThreshold": 1000,
+    "largeResourceThreshold": 512
+  },
+  "logging": {
+    "enabled": true,
+    "level": "info",
+    "outputDir": "logs",
+    "format": "[{timestamp}] [{level}] {message}",
+    "maxFiles": 7,
+    "maxFileSize": 10485760
+  },
+  "ui": {
+    "showAnimation": true,
+    "animationDelay": 25,
+    "loadingCycles": 2,
+    "colors": {
+      "primary": "cyan",
+      "secondary": "yellow",
+      "success": "green"
+    }
+  }
+}
