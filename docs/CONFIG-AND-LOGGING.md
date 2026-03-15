@@ -176,16 +176,31 @@ logs/
 ### 日志 API
 
 ```javascript
-import { init, info, warn, error, debug } from './utils/logger.js';
+import { init, info, warn, error, debug, loadConfig } from './utils/logger.js';
 
-// 初始化日志系统
+// 初始化日志系统（自动加载 config.json）
 init();
+
+// 或手动加载配置
+loadConfig();
 
 // 记录日志
 info('应用启动', { version: '2.1.0' });
 warn('配置文件不存在，使用默认配置');
 error('操作失败', { error: error.message });
 debug('详细调试信息', { data: {...} });
+```
+
+### 配置管理
+
+配置通过 `logger.js` 的 `loadConfig()` 函数加载，无需单独的 config.js 模块。
+
+```javascript
+import { loadConfig } from './utils/logger.js';
+
+// 加载配置
+loadConfig(); // 加载 config.json
+loadConfig('./custom-config.json'); // 加载自定义配置
 ```
 
 ### 日志管理命令
@@ -197,35 +212,23 @@ npm run clean:logs
 
 ---
 
-## 🔧 配置管理 API
+## 🔧 配置 API
 
 ### 加载配置
 
-```javascript
-import { loadConfig, getConfig, set, get } from './utils/config.js';
-
-// 加载配置
-const config = loadConfig();
-
-// 获取配置（支持嵌套键）
-const browser = getConfig('browser.default');
-const logLevel = get('logging.level', 'info');
-
-// 设置配置（运行时）
-set('logging.level', 'debug');
-set('browser.headless', true);
-```
-
-### 配置验证
+配置由 `logger.js` 自动加载，也可手动调用：
 
 ```javascript
-import { validateConfig } from './utils/config.js';
+import { loadConfig } from './utils/logger.js';
 
-const isValid = validateConfig(config);
-if (!isValid) {
-  console.error('配置验证失败');
-}
+// 加载 config.json
+loadConfig();
+
+// 加载自定义配置
+loadConfig('./path/to/config.json');
 ```
+
+**注意**: 配置功能已集成到 `logger.js` 中，无需单独的 config.js 模块。
 
 ---
 
